@@ -30,11 +30,30 @@
       class="elevation-1"
       :search="search"
       :custom-filter="filterNames"
+      multi-sort
     >
+      <!-- Без выделения цветом -->
       <template v-slot:item.salary="{ item }">{{item.salary}}₽ ({{item.fraction}})%</template>
       <template v-slot:item.byHours="{ item }">
-        <v-simple-checkbox v-model="item.byHours" color="success" disabled></v-simple-checkbox>
+        <v-simple-checkbox v-model="item.byHours" color="success"></v-simple-checkbox>
       </template>
+      <!--  -->
+
+      <!-- Выделение цветом -->
+      <!-- <template v-slot:item="{ item }">
+        <tr :style="{ backgroundColor: getRowColor(item) }">
+          <td v-for="key in Object.keys(headers)" :key="key">
+            <span v-if="String(headers[key].value) === 'byHours'">
+              <v-simple-checkbox v-model="item.byHours" color="success"></v-simple-checkbox>
+            </span>
+            <span
+              v-if="String(headers[key].value) === 'fraction'"
+            >{{item.salary}}₽ ({{item.fraction}})%</span>
+            <span v-if="String(headers[key].value) !== 'byHours'">{{ item[headers[key].value] }}</span>
+          </td>
+        </tr>
+      </template>-->
+      <!-- Выделение цветом -->
     </v-data-table>
   </v-card>
 </template>
@@ -148,6 +167,9 @@ export default {
   methods: {
     filterNames(value, search, item) {
       return item.name.toLowerCase().indexOf(search.toLowerCase()) !== -1;
+    },
+    getRowColor(item) {
+      return item.fireDate != null ? "red" : "";
     },
   },
 };
