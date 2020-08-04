@@ -16,7 +16,7 @@
       <v-checkbox v-model="fired" color="success" class="mx-2" label="Показывать уволенных"></v-checkbox>
       <v-btn color="success">Принять на должность</v-btn>
       <v-btn
-        color="success"
+        color="error"
         :disabled="selected.length === 0"
       >Снять с должност{{ selected.length > 1 ? 'ей':'и'}}</v-btn>
     </v-card-actions>
@@ -33,7 +33,39 @@
       multi-sort
     >
       <!-- Без выделения цветом -->
-      <template v-slot:item.salary="{ item }">{{item.salary}}₽ ({{item.fraction}})%</template>
+      <template v-slot:item.salary="{ item }">
+        <!-- Редактирование Ставки:salary fraction -->
+        <v-edit-dialog pa-6 :return-value.sync="item.salary">
+          {{item.salary}}₽ ({{item.fraction}})%
+          <template v-slot:input>
+            <v-text-field v-model="item.salary" label="Ставка, руб"></v-text-field>
+            <v-text-field v-model="item.fraction" label="Ставка, %"></v-text-field>
+            <v-btn text>Отменить</v-btn>
+            <v-btn text>Сохранить</v-btn>
+          </template>
+        </v-edit-dialog>
+      </template>
+
+      <template v-slot:item.base="{ item }">
+        <!-- Редактирование Базы:base -->
+        <v-edit-dialog :return-value.sync="item.base">
+          {{ item.base }}₽
+          <template v-slot:input>
+            <v-text-field v-model="item.base" label="База, руб"></v-text-field>
+          </template>
+        </v-edit-dialog>
+      </template>
+
+      <template v-slot:item.advance="{ item }">
+        <!-- Редактирование Аванса:advance -->
+        <v-edit-dialog :return-value.sync="item.advance">
+          {{item.advance}}₽
+          <template v-slot:input>
+            <v-text-field v-model="item.advance" label="Аванс, руб"></v-text-field>
+          </template>
+        </v-edit-dialog>
+      </template>
+
       <template v-slot:item.byHours="{ item }">
         <v-simple-checkbox v-model="item.byHours" color="success"></v-simple-checkbox>
       </template>
