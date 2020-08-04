@@ -28,6 +28,7 @@
       :search="search"
       :custom-filter="filterNames"
     >
+      <template v-slot:item.salary="{ item }">{{item.salary}}₽ ({{item.fraction}})%</template>
       <template v-slot:item.byHours="{ item }">
         <v-simple-checkbox v-model="item.byHours" color="success" disabled></v-simple-checkbox>
       </template>
@@ -142,10 +143,8 @@ export default {
     };
   },
   methods: {
-    filterNames(value, search) {
-      return (
-        String(value).toLowerCase().indexOf(String(search).toLowerCase()) !== -1
-      );
+    filterNames(value, search, item) {
+      return item.name.toLowerCase().indexOf(search.toLowerCase()) !== -1;
     },
   },
 };
