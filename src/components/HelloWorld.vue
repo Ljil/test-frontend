@@ -15,7 +15,10 @@
       <v-spacer></v-spacer>
       <v-checkbox v-model="fired" color="success" class="mx-2" label="Показывать уволенных"></v-checkbox>
       <v-btn color="success">Принять на должность</v-btn>
-      <v-btn color="success">Снять с должности</v-btn>
+      <v-btn
+        color="success"
+        :disabled="selected.length === 0"
+      >Снять с должност{{ selected.length > 1 ? 'ей':'и'}}</v-btn>
     </v-card-actions>
     <v-data-table
       v-model="selected"
