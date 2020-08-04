@@ -25,6 +25,8 @@
       :items-per-page="5"
       show-select
       class="elevation-1"
+      :search="search"
+      :custom-filter="filterNames"
     >
       <template v-slot:item.byHours="{ item }">
         <v-simple-checkbox v-model="item.byHours" color="success" disabled></v-simple-checkbox>
@@ -138,6 +140,13 @@ export default {
         },
       ],
     };
+  },
+  methods: {
+    filterNames(value, search) {
+      return (
+        String(value).toLowerCase().indexOf(String(search).toLowerCase()) !== -1
+      );
+    },
   },
 };
 </script>
