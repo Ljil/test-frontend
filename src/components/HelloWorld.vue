@@ -13,7 +13,13 @@
     </v-card-title>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-checkbox v-model="fired" color="success" class="mx-2" label="Показывать уволенных"></v-checkbox>
+      <v-checkbox
+        @click="showFired()"
+        v-model="fired"
+        color="success"
+        class="mx-2"
+        label="Показывать уволенных"
+      ></v-checkbox>
       <v-btn color="success">Принять на должность</v-btn>
       <v-btn
         color="error"
@@ -126,7 +132,8 @@ export default {
         { text: "Аванс", value: "advance" },
         { text: "Почасовая", value: "byHours" },
       ],
-      data: [
+      data: [],
+      pre_data: [
         {
           name: "Джордж Вашингтон",
           companyName: 'ООО "Синергия"',
@@ -214,12 +221,24 @@ export default {
       ],
     };
   },
+  mounted() {
+    this.showFired();
+  },
   methods: {
     filterNames(value, search, item) {
       return item.name.toLowerCase().indexOf(search.toLowerCase()) !== -1;
     },
     getRowColor(item) {
       return item.fireDate != null ? "red" : "";
+    },
+    showFired() {
+      if (this.fired) {
+        this.data = this.pre_data;
+      } else {
+        this.data = this.pre_data.filter(function (entry) {
+          return entry.fireDate === null;
+        });
+      }
     },
   },
 };
