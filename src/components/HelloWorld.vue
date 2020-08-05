@@ -38,10 +38,24 @@
         <v-edit-dialog pa-6 :return-value.sync="item.salary">
           {{item.salary}}₽ ({{item.fraction}})%
           <template v-slot:input>
-            <v-text-field v-model="item.salary" label="Ставка, руб"></v-text-field>
-            <v-text-field v-model="item.fraction" label="Ставка, %"></v-text-field>
-            <v-btn text>Отменить</v-btn>
-            <v-btn text>Сохранить</v-btn>
+            <v-container>
+              <v-row>
+                <v-col>
+                  <v-text-field pa-6 v-model="item.salary" label="Ставка, руб"></v-text-field>
+                </v-col>
+                <v-col>
+                  <v-text-field py-6 v-model="item.fraction" label="Ставка, %"></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col>
+                  <v-btn color="success" text>Отменить</v-btn>
+                </v-col>
+                <v-col>
+                  <v-btn color="success" text>Сохранить</v-btn>
+                </v-col>
+              </v-row>
+            </v-container>
           </template>
         </v-edit-dialog>
       </template>
@@ -52,6 +66,8 @@
           {{ item.base }}₽
           <template v-slot:input>
             <v-text-field v-model="item.base" label="База, руб"></v-text-field>
+            <v-btn color="success" text>Отменить</v-btn>
+            <v-btn color="success" text>Сохранить</v-btn>
           </template>
         </v-edit-dialog>
       </template>
@@ -62,6 +78,8 @@
           {{item.advance}}₽
           <template v-slot:input>
             <v-text-field v-model="item.advance" label="Аванс, руб"></v-text-field>
+            <v-btn color="success" text>Отменить</v-btn>
+            <v-btn color="success" text>Сохранить</v-btn>
           </template>
         </v-edit-dialog>
       </template>
