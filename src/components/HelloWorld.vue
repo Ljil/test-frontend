@@ -23,14 +23,15 @@
       <v-btn color="success">Принять на должность</v-btn>
       <v-btn
         color="error"
-        :disabled="selected.length === 0"
+        :disabled="!selected.length"
       >Снять с должност{{ selected.length > 1 ? 'ей':'и'}}</v-btn>
     </v-card-actions>
     <v-data-table
       v-model="selected"
-      item-key="name"
+      item-key="id"
       :headers="headers"
       :items="data"
+      :item-class="getRowColor"
       :items-per-page="5"
       show-select
       class="elevation-1"
@@ -38,19 +39,44 @@
       :custom-filter="filterNames"
       multi-sort
     >
-      <!-- Без выделения цветом -->
+      <!-- Выбор всех -->
+      <template v-slot:header.data-table-select>
+        <!-- Выбор  всех (на всех страницах) -->
+        <v-simple-checkbox color="success" v-model="selected.length"></v-simple-checkbox>
+      </template>
+
+      <!-- выбор строки иеактивация чекбокса у уволенных -->
+      <template v-slot:item.data-table-select="{item}">
+        <v-simple-checkbox
+          color="success"
+          @click="check(item)"
+          v-model="item.selected"
+          v-if="!item.fireDate"
+        ></v-simple-checkbox>
+      </template>
+
+      <!-- Редактирование Ставки:salary fraction -->
       <template v-slot:item.salary="{ item }">
-        <!-- Редактирование Ставки:salary fraction -->
         <v-edit-dialog :return-value.sync="item.salary">
           {{item.salary}}₽ ({{item.fraction}})%
           <template v-slot:input>
             <v-container>
               <v-row>
                 <v-col>
-                  <v-text-field pa-6 v-model="item.salary" label="Ставка, руб"></v-text-field>
+                  <v-text-field
+                    :disabled="item.fireDate"
+                    pa-6
+                    v-model="item.salary"
+                    label="Ставка, руб"
+                  ></v-text-field>
                 </v-col>
                 <v-col>
-                  <v-text-field py-6 v-model="item.fraction" label="Ставка, %"></v-text-field>
+                  <v-text-field
+                    :disabled="item.fireDate"
+                    py-6
+                    v-model="item.fraction"
+                    label="Ставка, %"
+                  ></v-text-field>
                 </v-col>
               </v-row>
               <v-row>
@@ -71,7 +97,7 @@
         <v-edit-dialog :return-value.sync="item.base">
           {{ item.base }}₽
           <template v-slot:input>
-            <v-text-field v-model="item.base" label="База, руб"></v-text-field>
+            <v-text-field :disabled="item.fireDate" v-model="item.base" label="База, руб"></v-text-field>
             <v-btn color="success" text>Отменить</v-btn>
             <v-btn color="success" text>Сохранить</v-btn>
           </template>
@@ -83,7 +109,7 @@
         <v-edit-dialog :return-value.sync="item.advance">
           {{item.advance}}₽
           <template v-slot:input>
-            <v-text-field v-model="item.advance" label="Аванс, руб"></v-text-field>
+            <v-text-field :disabled="item.fireDate" v-model="item.advance" label="Аванс, руб"></v-text-field>
             <v-btn color="success" text>Отменить</v-btn>
             <v-btn color="success" text>Сохранить</v-btn>
           </template>
@@ -91,25 +117,8 @@
       </template>
 
       <template v-slot:item.byHours="{ item }">
-        <v-simple-checkbox v-model="item.byHours" color="success"></v-simple-checkbox>
+        <v-simple-checkbox v-model="item.byHours" :disabled="item.fireDate" color="success"></v-simple-checkbox>
       </template>
-      <!--  -->
-
-      <!-- Выделение цветом -->
-      <!-- <template v-slot:item="{ item }">
-        <tr :style="{ backgroundColor: getRowColor(item) }">
-          <td v-for="key in Object.keys(headers)" :key="key">
-            <span v-if="String(headers[key].value) === 'byHours'">
-              <v-simple-checkbox v-model="item.byHours" color="success"></v-simple-checkbox>
-            </span>
-            <span
-              v-if="String(headers[key].value) === 'fraction'"
-            >{{item.salary}}₽ ({{item.fraction}})%</span>
-            <span v-if="String(headers[key].value) !== 'byHours'">{{ item[headers[key].value] }}</span>
-          </td>
-        </tr>
-      </template>-->
-      <!-- Выделение цветом -->
     </v-data-table>
   </v-card>
 </template>
@@ -142,11 +151,22 @@ export default {
     this.loadData();
   },
   methods: {
+    check(item) {
+      //добавляет в массив выделенных (только если нет fireDate)
+      if (item.fireDate !== null) return;
+      const index = this.selected.indexOf(item);
+      if (index > -1) {
+        this.selected.splice(index, 1);
+      } else {
+        this.selected.push(item);
+      }
+    },
     async loadData() {
       this.pre_data = await axios.post("http://localhost:8000/api/", {
         query: `{
           getOccupations{
             id
+            advance
             name
             companyName
             positionName
@@ -177,7 +197,6 @@ export default {
           return entry.fireDate === null;
         });
       }
-      ``;
     },
   },
 };
